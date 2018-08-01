@@ -19,15 +19,14 @@ namespace CleanArchitecture.Infrastructure.Data
         {
             return _dbContext.Set<T>().SingleOrDefault(e => e.Id == id);
         }
-
-        public List<T> List<T>() where T : BaseEntity
-        {
-            return _dbContext.Set<T>().ToList();
-        }
-
         public List<T> List<T>(ISpecification<T> spec) where T : BaseEntity
         {
-            return _dbContext.Set<T>().Where(spec.Criteria).ToList();
+            IQueryable<T> dbSet = _dbContext.Set<T>();
+            if (spec != null)
+            {
+                dbSet = dbSet.Where(spec.Criteria);
+            }
+            return dbSet.ToList();
         }
 
         public T Add<T>(T entity) where T : BaseEntity

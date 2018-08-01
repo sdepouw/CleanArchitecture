@@ -91,8 +91,7 @@ namespace CleanArchitecture.Tests.Integration.Data
             repository.Delete(item);
 
             // verify it's no longer there
-            Assert.DoesNotContain(repository.List<ToDoItem>(),
-                i => i.Title == initialTitle);
+            Assert.DoesNotContain(repository.List<ToDoItem>(), i => i.Title == initialTitle);
         }
 
         [Fact]
@@ -124,7 +123,7 @@ namespace CleanArchitecture.Tests.Integration.Data
             Assert.Equal("Buzz", itemsByIsDone.Single().Title);
         }
 
-        private EfRepository GetRepository()
+        private IRepository GetRepository()
         {
             var options = CreateNewContextOptions();
             var mockDispatcher = new Mock<IDomainEventDispatcher>();
