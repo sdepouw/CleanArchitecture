@@ -1,10 +1,12 @@
 ﻿using CleanArchitecture.Core.Entities;
 using CleanArchitecture.Core.Interfaces;
+using CleanArchitecture.Core.Specifications;
 using CleanArchitecture.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -91,6 +93,35 @@ namespace CleanArchitecture.Tests.Integration.Data
             // verify it's no longer there
             Assert.DoesNotContain(repository.List<ToDoItem>(),
                 i => i.Title == initialTitle);
+        }
+
+        [Fact]
+        public void FilterBySpec()
+        {
+            var repository = GetRepository();
+            var todoItems = new List<ToDoItem>
+            {
+                new ToDoItemBuilder().Id(45).Title("Foo").Build(),
+                new ToDoItemBuilder().Title("Bar").Build(),
+                new ToDoItemBuilder().Title("Fizz").Build(),
+                new ToDoItemBuilder().Title("Buzz").MarkAsDone().Build(),
+            };
+            todoItems.ForEach(item => repository.Add(item));
+
+            List<ToDoItem> itemsByTitle = repository.List(ToDoItemSpec.ByTitle("Bar"));
+
+            Assert.Single(itemsByTitle);
+            Assert.Equal("Bar", itemsByTitle.Single().Title);
+
+            List<ToDoItem> itemsById = repository.List(BaseEntitySpec<ToDoItem>.ById(45));
+
+            Assert.Single(itemsById);
+            Assert.Equal("Foo", itemsById.Single().Title);
+
+            List<ToDoItem> itemsByIsDone = repository.List(ToDoItemSpec.ByIsDone(true));
+
+            Assert.Single(itemsByIsDone);
+            Assert.Equal("Buzz", itemsByIsDone.Single().Title);
         }
 
         private EfRepository GetRepository()

@@ -24,6 +24,12 @@ namespace CleanArchitecture.Tests
             return this;
         }
 
+        public ToDoItemBuilder MarkAsDone()
+        {
+            _todo.MarkComplete();
+            return this;
+        }
+
         public ToDoItem Build() => _todo;
     }
 }

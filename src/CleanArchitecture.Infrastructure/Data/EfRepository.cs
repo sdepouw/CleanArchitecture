@@ -25,6 +25,11 @@ namespace CleanArchitecture.Infrastructure.Data
             return _dbContext.Set<T>().ToList();
         }
 
+        public List<T> List<T>(ISpecification<T> spec) where T : BaseEntity
+        {
+            return _dbContext.Set<T>().Where(spec.Criteria).ToList();
+        }
+
         public T Add<T>(T entity) where T : BaseEntity
         {
             _dbContext.Set<T>().Add(entity);
